@@ -138,7 +138,7 @@ namespace LuaPlayer
     int HasTitle(Eluna* E, Player* player)
     {
         uint32 id = E->CHECKVAL<uint32>(2);
-        CharTitlesEntry const* titleInfo = sCharTitlesStore.LookupEntry(id);
+        CharTitlesEntry const* titleInfo = sDBCMgr->GetCharTitlesEntry(id);
         if (titleInfo)
             E->Push(player->HasTitle(titleInfo));
         return 1;
@@ -1951,7 +1951,8 @@ namespace LuaPlayer
     int SetKnownTitle(Eluna* E, Player* player)
     {
         uint32 id = E->CHECKVAL<uint32>(2);
-        CharTitlesEntry const* t = sCharTitlesStore.LookupEntry(id);
+        CharTitlesEntry const* t = sDBCMgr->GetCharTitlesEntry(id);
+
         if (t)
             player->SetTitle(t, false);
         return 0;
@@ -3007,7 +3008,8 @@ namespace LuaPlayer
     int UnsetKnownTitle(Eluna* E, Player* player)
     {
         uint32 id = E->CHECKVAL<uint32>(2);
-        CharTitlesEntry const* t = sCharTitlesStore.LookupEntry(id);
+        CharTitlesEntry const* t = sDBCMgr->GetCharTitlesEntry(id);
+
         if (t)
             player->SetTitle(t, true);
         return 0;

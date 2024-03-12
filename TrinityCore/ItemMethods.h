@@ -811,7 +811,7 @@ namespace LuaItem
         }
 
         uint32 enchant = E->CHECKVAL<uint32>(2);
-        if (!sSpellItemEnchantmentStore.LookupEntry(enchant))
+        if (!sDBCMgr->GetSpellItemEnchantmentEntry(enchant))
         {
             E->Push(false);
             return 1;
