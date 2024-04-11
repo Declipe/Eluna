@@ -33,6 +33,26 @@
 #include "Log/Log.h"
 #endif
 
+#if !defined(MANGOS) && !defined(VMANGOS)
+#define USING_BOOST
+#endif
+
+#if defined(TRINITY_PLATFORM) && defined(TRINITY_PLATFORM_WINDOWS)
+#if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
+#define ELUNA_WINDOWS
+#endif
+#elif defined(AC_PLATFORM) && defined(AC_PLATFORM_WINDOWS)
+#if AC_PLATFORM == AC_PLATFORM_WINDOWS
+#define ELUNA_WINDOWS
+#endif
+#elif defined(PLATFORM) && defined(PLATFORM_WINDOWS)
+#if PLATFORM == PLATFORM_WINDOWS
+#define ELUNA_WINDOWS
+#endif
+#else
+#error Eluna could not determine platform
+#endif
+
 #if defined(TRINITY) || defined(AZEROTHCORE)
 typedef QueryResult ElunaQuery;
 #define GET_GUID                GetGUID
@@ -74,7 +94,7 @@ typedef QueryResult ElunaQuery;
 #define ELUNA_LOG_ERROR(...)    LOG_ERROR("eluna", __VA_ARGS__);
 #define ELUNA_LOG_DEBUG(...)    LOG_DEBUG("eluna", __VA_ARGS__);
 #elif VMANGOS
-typedef QueryNamedResult ElunaQuery;
+typedef std::shared_ptr<QueryNamedResult> ElunaQuery;
 #define ASSERT                  MANGOS_ASSERT
 #define ELUNA_LOG_INFO(...)     sLog.Out(LOG_ELUNA, LOG_LVL_BASIC,__VA_ARGS__);
 #define ELUNA_LOG_ERROR(...)    sLog.Out(LOG_ELUNA, LOG_LVL_ERROR,__VA_ARGS__);
@@ -84,7 +104,7 @@ typedef QueryNamedResult ElunaQuery;
 #define GetItemTemplate         GetItemPrototype
 #define GetTemplate             GetProto
 #else
-typedef QueryNamedResult ElunaQuery;
+typedef std::shared_ptr<QueryNamedResult> ElunaQuery;
 #define ASSERT                  MANGOS_ASSERT
 #define ELUNA_LOG_INFO(...)     sLog.outString(__VA_ARGS__);
 #define ELUNA_LOG_ERROR(...)    sLog.outErrorEluna(__VA_ARGS__);

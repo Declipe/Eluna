@@ -7,7 +7,7 @@
 #ifndef QUERYMETHODS_H
 #define QUERYMETHODS_H
 
-#define RESULT  result
+#define RESULT  (*result)
 
 /***
  * The result of a database query.
@@ -306,10 +306,8 @@ namespace LuaQuery
                         break;
                 }
             }
-
             lua_rawset(E->L, tbl);
         }
-
         lua_settop(E->L, tbl);
         return 1;
     }
