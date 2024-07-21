@@ -8,6 +8,9 @@
 #define PLAYERMETHODS_H
 
 #include "LuaValue.h"
+#include "NPCPackets.h"
+#include "PartyPackets.h"
+#include <boost/callable_traits/args.hpp>
 
 /***
  * Inherits all methods from: [Object], [WorldObject], [Unit]
@@ -236,11 +239,7 @@ namespace LuaPlayer
      */
     int CanSpeak(Eluna* E, Player* player)
     {
-#ifndef CATA
         E->Push(player->GetSession()->CanSpeak());
-#else
-        E->Push(player->CanSpeak());
-#endif
         return 1;
     }
 
@@ -375,7 +374,6 @@ namespace LuaPlayer
         return 1;
     }
 
-#ifndef CATA
     /**
      * Returns 'true' if the [Player] satisfies all requirements to complete the repeatable quest entry.
      *
@@ -413,7 +411,6 @@ namespace LuaPlayer
 
         return 1;
     }
-#endif
 
     /**
      * Returns 'true' if the [Player] is a part of the Horde faction, 'false' otherwise.
@@ -665,12 +662,7 @@ namespace LuaPlayer
 
     int IsNeverVisible(Eluna* E, Player* player)
     {
-        // Possibly add a bool var here
-#ifdef CATA
-        E->Push(player->IsNeverVisible());
-#else
         E->Push(player->IsNeverVisible(true));
-#endif
         return 1;
     }
 
@@ -717,7 +709,6 @@ namespace LuaPlayer
         return 1;
     }
 
-#ifndef CATA
     /**
      * Returns the normal phase of the player instead of the actual phase possibly containing GM phase
      *
@@ -761,7 +752,6 @@ namespace LuaPlayer
         E->Push(player->GetShieldBlockValue());
         return 1;
     }
-#endif
 
     /**
      * Returns the [Player]s cooldown delay by specified [Spell] ID
@@ -1063,11 +1053,7 @@ namespace LuaPlayer
      */
     int GetGuildRank(Eluna* E, Player* player) // TODO: Move to Guild Methods
     {
-#ifdef CATA
-        E->Push(player->GetGuildRank());
-#else
         E->Push(player->GetRank());
-#endif
         return 1;
     }
 
@@ -1550,7 +1536,6 @@ namespace LuaPlayer
         return 1;
     }
 
-#ifndef CATA
     /**
      * Returns the amount of mails in the [Player]s mailbox
      *
@@ -1583,7 +1568,6 @@ namespace LuaPlayer
         E->Push(player->GetXPForNextLevel());
         return 1;
     }
-#endif
 
     /**
      * Locks the player controls and disallows all movement and casting.
@@ -1692,11 +1676,7 @@ namespace LuaPlayer
         if (!player->GetGuildId())
             return 0;
 
-#ifdef CATA
-        player->SetGuildRank(rank);
-#else
         player->SetRank(rank);
-#endif
         return 0;
     }
 
@@ -1869,7 +1849,6 @@ namespace LuaPlayer
         return 0;
     }
 
-#ifndef CATA
     /**
      * Sets the [Player]s Arena Points to the amount specified
      *
@@ -1893,7 +1872,6 @@ namespace LuaPlayer
         player->SetHonorPoints(honorP);
         return 0;
     }
-#endif
 
     /**
      * Sets the [Player]s amount of Lifetime Honorable Kills to the value specified
@@ -1914,7 +1892,9 @@ namespace LuaPlayer
      */
     int SetCoinage(Eluna* E, Player* player)
     {
-        uint32 amt = E->CHECKVAL<uint32>(2);
+        using MoneyType = std::tuple_element_t<1, boost::callable_traits::args_t<decltype(&Player::SetMoney)>>;
+
+        MoneyType amt = E->CHECKVAL<MoneyType>(2);
         player->SetMoney(amt);
         return 0;
     }
@@ -1982,20 +1962,12 @@ namespace LuaPlayer
         bool apply = E->CHECKVAL<bool>(2, true);
 
         if(apply)
-#ifdef CATA
-            player->SetByteFlag(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, UNIT_BYTE2_FLAG_FFA_PVP);
-        else
-            player->RemoveByteFlag(UNIT_FIELD_BYTES_2, UNIT_BYTES_2_OFFSET_PVP_FLAG, UNIT_BYTE2_FLAG_FFA_PVP);
-#else
             player->SetPvpFlag(UNIT_BYTE2_FLAG_FFA_PVP);
         else
             player->RemovePvpFlag(UNIT_BYTE2_FLAG_FFA_PVP);
-#endif
         return 0;
     }
 
-
-#ifndef CATA
     int SetMovement(Eluna* E, Player* player)
     {
         int32 pType = E->CHECKVAL<int32>(2);
@@ -2003,7 +1975,6 @@ namespace LuaPlayer
         player->SetMovement((PlayerMovementType)pType);
         return 0;
     }
-#endif
 
     /**
      * Resets the [Player]s pets talent points
@@ -2037,7 +2008,6 @@ namespace LuaPlayer
         return 0;
     }
 
-#ifndef CATA
     /**
      * Adds or detracts from the [Player]s current Arena Points
      *
@@ -2063,7 +2033,6 @@ namespace LuaPlayer
         player->ModifyHonorPoints(amount);
         return 0;
     }
-#endif
 
     /**
      * Saves the [Player] to the database
@@ -2095,17 +2064,10 @@ namespace LuaPlayer
     int Mute(Eluna* E, Player* player)
     {
         uint32 muteseconds = E->CHECKVAL<uint32>(2);
-        /*const char* reason = luaL_checkstring(E, 2);*/ // Mangos does not have a reason field in database.
 
         time_t muteTime = time(NULL) + muteseconds;
         player->GetSession()->m_muteTime = muteTime;
-#ifdef WOTLK
         LoginDatabase.PExecute("UPDATE account SET mutetime = {} WHERE id = {}", muteTime, player->GetSession()->GetAccountId());
-#else
-        std::ostringstream oss;
-        oss << "UPDATE account SET mutetime = " << muteTime << " WHERE id = " << player->GetSession()->GetAccountId();
-        LoginDatabase.PExecute("%s", oss.str().c_str());
-#endif
         return 0;
     }
 
@@ -2137,16 +2099,7 @@ namespace LuaPlayer
     {
         Unit* unit = E->CHECKOBJ<Unit>(2);
 
-        AuctionHouseEntry const* ahEntry = AuctionHouseMgr::GetAuctionHouseEntry(unit->GetFaction());
-        if (!ahEntry)
-            return 0;
-
-        WorldPacket data(MSG_AUCTION_HELLO, 12);
-        data << unit->GET_GUID();
-        data << uint32(ahEntry->ID);
-        data << uint8(1);
-
-        player->GetSession()->SendPacket(&data);
+        player->GetSession()->SendAuctionHello(unit->GET_GUID(), unit);
         return 0;
     }
 
@@ -2220,11 +2173,7 @@ namespace LuaPlayer
     {
         Creature* obj = E->CHECKOBJ<Creature>(2);
 
-#ifdef CATA
-        player->GetSession()->SendTrainerList(obj, NULL);
-#else
         player->GetSession()->SendTrainerList(obj);
-#endif
         return 0;
     }
 
@@ -2469,11 +2418,7 @@ namespace LuaPlayer
      */
     int ResetTalentsCost(Eluna* E, Player* player)
     {
-#ifdef CATA
-        E->Push(player->GetNextResetTalentsCost());
-#else
         E->Push(player->ResetTalentsCost());
-#endif
         return 1;
     }
 
@@ -2720,23 +2665,15 @@ namespace LuaPlayer
             return 0;
 
         // check item starting quest (it can work incorrectly if added without item in inventory)
-#ifndef CATA
         ItemTemplateContainer const& itc = sObjectMgr->GetItemTemplateStore();
         auto itr = std::find_if(std::begin(itc), std::end(itc), [quest](ItemTemplateContainer::value_type const& value)
-        {
-            return value.second.StartQuest == quest->GetQuestId();
-        });
+            {
+                return value.second.StartQuest == quest->GetQuestId();
+            });
 
         if (itr != std::end(itc))
             return 0;
 
-#elif CATA
-        ItemTemplateContainer const* itc = sObjectMgr->GetItemTemplateStore();
-        ItemTemplateContainer::const_iterator result = std::find_if(itc->begin(), itc->end(), [quest](ItemTemplateContainer::value_type const& value)
-        {
-            return value.second.ExtendedData->StartQuest == quest->GetQuestId();
-        });
-#endif
         // ok, normal (creature/GO starting) quest
         if (player->CanAddQuest(quest, true))
             player->AddQuestAndCheckCompletion(quest, NULL);
@@ -3015,7 +2952,6 @@ namespace LuaPlayer
         return 0;
     }
 
-#ifndef CATA
     /**
      * Advances all of the [Player]s weapon skills to the maximum amount available
      */
@@ -3024,7 +2960,6 @@ namespace LuaPlayer
         player->UpdateWeaponsSkillsToMaxSkillsForLevel();
         return 0;
     }
-#endif
 
     /**
      * Advances all of the [Player]s skills to the amount specified
@@ -3088,21 +3023,11 @@ namespace LuaPlayer
         float z = E->CHECKVAL<float>(5);
         float o = E->CHECKVAL<float>(6);
 
-#ifdef CATA
-        if (player->IsInFlight())
-        {
-            player->GetMotionMaster()->MovementExpired();
-            player->m_taxi.ClearTaxiDestinations();
-        }
-        else
-            player->SaveRecallPosition();
-#else
         if (player->IsInFlight())
             player->FinishTaxiFlight();
         else
             player->SaveRecallPosition();
 
-#endif
         E->Push(player->TeleportTo(mapId, x, y, z, o));
         return 1;
     }
@@ -3315,11 +3240,7 @@ namespace LuaPlayer
      */
     int KickPlayer(Eluna* /*E*/, Player* player)
     {
-#ifndef CATA
         player->GetSession()->KickPlayer("PlayerMethods::KickPlayer Kick the player");
-#else
-        player->GetSession()->KickPlayer();
-#endif
         return 0;
     }
 
@@ -3330,7 +3251,9 @@ namespace LuaPlayer
      */
     int ModifyMoney(Eluna* E, Player* player)
     {
-        int32 amt = E->CHECKVAL<int32>(2);
+        using MoneyType = std::tuple_element_t<1, boost::callable_traits::args_t<decltype(&Player::ModifyMoney)>>;
+
+        MoneyType amt = E->CHECKVAL<MoneyType>(2);
 
         player->ModifyMoney(amt);
         return 1;
@@ -3506,15 +3429,14 @@ namespace LuaPlayer
         uint32 data = E->CHECKVAL<uint32>(6);
         std::string iconText = E->CHECKVAL<std::string>(7);
 
-        WorldPacket packet(SMSG_GOSSIP_POI, 4 + 4 + 4 + 4 + 4 + 10);
-        packet << flags;
-        packet << x;
-        packet << y;
-        packet << icon;
-        packet << data;
-        packet << iconText;
+        WorldPackets::NPC::GossipPOI packet;
+        packet.Name = iconText;
+        packet.Flags = flags;
+        packet.Pos.Pos.Relocate(x, y);
+        packet.Icon = icon;
+        packet.Importance = data;
 
-        player->GetSession()->SendPacket(&packet);
+        player->SendDirectMessage(packet.Write());
         return 0;
     }
 
@@ -3555,12 +3477,7 @@ namespace LuaPlayer
         if (!quest)
             return 0;
 
-#ifdef CATA
-        player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GET_GUID(), activateAccept, true);
-#else
         player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GET_GUID(), activateAccept);
-
-#endif
         return 0;
     }
 
@@ -3625,18 +3542,9 @@ namespace LuaPlayer
 
         if (success)
         {
-#ifdef CATA
-            WorldPacket data(SMSG_PARTY_INVITE, 10);                // guess size
-#else
-            WorldPacket data(SMSG_GROUP_INVITE, 10);                // guess size
-#endif
-            data << uint8(1);                                       // invited/already in group flag
-            data << player->GetName();                              // max len 48
-            data << uint32(0);                                      // unk
-            data << uint8(0);                                       // count
-            data << uint32(0);                                      // unk
-
-            invited->GetSession()->SendPacket(&data);
+            WorldPackets::Party::PartyInvite partyInvite;
+            partyInvite.Initialize(player, 0, true);
+            invited->SendDirectMessage(partyInvite.Write());
         }
 
         E->Push(success);
@@ -3815,10 +3723,8 @@ namespace LuaPlayer
         { "GetGuild", &LuaPlayer::GetGuild },
         { "GetAccountId", &LuaPlayer::GetAccountId },
         { "GetAccountName", &LuaPlayer::GetAccountName },
-#ifndef CATA
         { "GetArenaPoints", &LuaPlayer::GetArenaPoints },
         { "GetHonorPoints", &LuaPlayer::GetHonorPoints },
-#endif
         { "GetLifetimeKills", &LuaPlayer::GetLifetimeKills },
         { "GetPlayerIP", &LuaPlayer::GetPlayerIP },
         { "GetLevelPlayedTime", &LuaPlayer::GetLevelPlayedTime },
@@ -3832,9 +3738,7 @@ namespace LuaPlayer
         { "GetQuestLevel", &LuaPlayer::GetQuestLevel },
         { "GetChatTag", &LuaPlayer::GetChatTag },
         { "GetRestBonus", &LuaPlayer::GetRestBonus },
-#ifndef CATA
         { "GetPhaseMaskForSpawn", &LuaPlayer::GetPhaseMaskForSpawn },
-#endif
         { "GetReqKillOrCastCurrentCount", &LuaPlayer::GetReqKillOrCastCurrentCount },
         { "GetQuestStatus", &LuaPlayer::GetQuestStatus },
         { "GetInGameTime", &LuaPlayer::GetInGameTime },
@@ -3874,17 +3778,13 @@ namespace LuaPlayer
         { "GetCorpse", &LuaPlayer::GetCorpse },
         { "GetGossipTextId", &LuaPlayer::GetGossipTextId },
         { "GetQuestRewardStatus", &LuaPlayer::GetQuestRewardStatus },
-#ifndef CATA
         { "GetShieldBlockValue", &LuaPlayer::GetShieldBlockValue },
         { "GetMailCount", &LuaPlayer::GetMailCount },
         { "GetXP", &LuaPlayer::GetXP },
         { "GetXPForNextLevel", &LuaPlayer::GetXPForNextLevel },
-#endif
 
         // Setters
-#ifndef CATA
         { "AdvanceSkillsToMax", &LuaPlayer::AdvanceSkillsToMax },
-#endif
         { "AdvanceSkill", &LuaPlayer::AdvanceSkill },
         { "AdvanceAllSkills", &LuaPlayer::AdvanceAllSkills },
         { "AddLifetimeKills", &LuaPlayer::AddLifetimeKills },
@@ -3892,10 +3792,8 @@ namespace LuaPlayer
         { "SetKnownTitle", &LuaPlayer::SetKnownTitle },
         { "UnsetKnownTitle", &LuaPlayer::UnsetKnownTitle },
         { "SetBindPoint", &LuaPlayer::SetBindPoint },
-#ifndef CATA
         { "SetArenaPoints", &LuaPlayer::SetArenaPoints },
         { "SetHonorPoints", &LuaPlayer::SetHonorPoints },
-#endif
         { "SetLifetimeKills", &LuaPlayer::SetLifetimeKills },
         { "SetGameMaster", &LuaPlayer::SetGameMaster },
         { "SetGMChat", &LuaPlayer::SetGMChat },
@@ -3908,9 +3806,7 @@ namespace LuaPlayer
         { "SetReputation", &LuaPlayer::SetReputation },
         { "SetFreeTalentPoints", &LuaPlayer::SetFreeTalentPoints },
         { "SetGuildRank", &LuaPlayer::SetGuildRank },
-#ifndef CATA
         { "SetMovement", &LuaPlayer::SetMovement },
-#endif
         { "SetSkill", &LuaPlayer::SetSkill },
         { "SetFactionForRace", &LuaPlayer::SetFactionForRace },
         { "SetDrunkValue", &LuaPlayer::SetDrunkValue },
@@ -3981,10 +3877,8 @@ namespace LuaPlayer
         { "CanFly", &LuaPlayer::CanFly },
         { "IsMoving", &LuaPlayer::IsMoving },
         { "IsFlying", &LuaPlayer::IsFlying },
-#ifndef CATA
         { "CanCompleteRepeatableQuest", &LuaPlayer::CanCompleteRepeatableQuest },
         { "CanRewardQuest", &LuaPlayer::CanRewardQuest },
-#endif
 
         // Gossip
         { "GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem },
@@ -4045,10 +3939,8 @@ namespace LuaPlayer
         { "DurabilityPointLossForEquipSlot", &LuaPlayer::DurabilityPointLossForEquipSlot },
         { "DurabilityRepairAll", &LuaPlayer::DurabilityRepairAll },
         { "DurabilityRepair", &LuaPlayer::DurabilityRepair },
-#ifndef CATA
         { "ModifyHonorPoints", &LuaPlayer::ModifyHonorPoints },
         { "ModifyArenaPoints", &LuaPlayer::ModifyArenaPoints },
-#endif
         { "LeaveBattleground", &LuaPlayer::LeaveBattleground },
         { "BindToInstance", &LuaPlayer::BindToInstance },
         { "UnbindInstance", &LuaPlayer::UnbindInstance },
@@ -4097,24 +3989,6 @@ namespace LuaPlayer
         { "ResetHonor", nullptr, METHOD_REG_NONE }, // classic only
         { "ClearHonorInfo", nullptr, METHOD_REG_NONE }, // classic only
         { "GainSpellComboPoints", nullptr, METHOD_REG_NONE }, // not implemented
-
-#ifdef CATA //Not implmented in TCPP
-        { "GetArenaPoints", nullptr, METHOD_REG_NONE },
-        { "GetHonorPoints", nullptr, METHOD_REG_NONE },
-        { "GetPhaseMaskForSpawn", nullptr, METHOD_REG_NONE },
-        { "GetShieldBlockValue", nullptr, METHOD_REG_NONE },
-        { "GetMailCount", nullptr, METHOD_REG_NONE },
-        { "GetXP", nullptr, METHOD_REG_NONE },
-        { "GetXPForNextLevel", nullptr, METHOD_REG_NONE },
-        { "AdvanceSkillsToMax", nullptr, METHOD_REG_NONE },
-        { "SetArenaPoints", nullptr, METHOD_REG_NONE },
-        { "SetHonorPoints", nullptr, METHOD_REG_NONE },
-        { "SetMovement", nullptr, METHOD_REG_NONE },
-        { "CanCompleteRepeatableQuest", nullptr, METHOD_REG_NONE },
-        { "CanRewardQuest", nullptr, METHOD_REG_NONE },
-        { "ModifyHonorPoints", nullptr, METHOD_REG_NONE },
-        { "ModifyArenaPoints", nullptr, METHOD_REG_NONE },
-#endif
 
         { NULL, NULL, METHOD_REG_NONE }
     };
