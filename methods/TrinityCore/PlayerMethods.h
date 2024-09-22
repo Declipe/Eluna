@@ -1972,7 +1972,7 @@ namespace LuaPlayer
     {
         int32 pType = E->CHECKVAL<int32>(2);
 
-        player->SendMovementSetCollisionHeight(player->GetCollisionHeight());
+        player->SetMovement((PlayerMovementType)pType);
         return 0;
     }
 
