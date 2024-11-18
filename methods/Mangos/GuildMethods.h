@@ -230,7 +230,7 @@ namespace LuaGuild
         guild->ChangeMemberRank(player->GET_GUID(), newRank);
         return 0;
     }
-    
+
     ElunaRegister<Guild> GuildMethods[] =
     {
         // Getters

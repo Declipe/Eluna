@@ -311,7 +311,7 @@ namespace LuaQuery
         lua_settop(E->L, tbl);
         return 1;
     }
-    
+
     ElunaRegister<ElunaQuery> QueryMethods[] =
     {
         // Getters

@@ -178,7 +178,7 @@ namespace LuaAura
         aura->GetTarget()->RemoveSpellAuraHolder(aura->GetHolder(), AURA_REMOVE_BY_CANCEL);
         return 0;
     }
-    
+
     ElunaRegister<Aura> AuraMethods[] =
     {
         // Getters

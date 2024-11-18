@@ -48,7 +48,7 @@ namespace LuaGroup
         return 1;
     }
 #endif
-    
+
     /**
      * Returns 'true' if the [Group] is a raid [Group]
      *
@@ -370,7 +370,7 @@ namespace LuaGroup
 #endif
         return 0;
     }
-    
+
     ElunaRegister<Group> GroupMethods[] =
     {
         // Getters

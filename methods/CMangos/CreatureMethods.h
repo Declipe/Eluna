@@ -1127,7 +1127,7 @@ namespace LuaCreature
             E->Push(cInfo->Family);
         return 1;
     }
-    
+
     /**
      * Adds threat to the [Creature] from the victim.
      *
@@ -1167,7 +1167,7 @@ namespace LuaCreature
 #endif
         return 0;
     }
-    
+
     /**
      * Clears the [Creature]'s threat list.
      */
@@ -1193,7 +1193,7 @@ namespace LuaCreature
         creature->RemoveFromWorld();
         return 0;
     }
-    
+
     ElunaRegister<Creature> CreatureMethods[] =
     {
         // Getters
@@ -1289,7 +1289,7 @@ namespace LuaCreature
         { "AddThreat", &LuaCreature::AddThreat },
         { "ClearThreatList", &LuaCreature::ClearThreatList },
         { "RemoveFromWorld", &LuaCreature::RemoveFromWorld },
-        
+
         // Not implemented methods
         { "GetWaypointPath", METHOD_REG_NONE }, // TC/Acore
         { "GetLootMode", METHOD_REG_NONE }, // TC/Acore

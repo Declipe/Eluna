@@ -179,7 +179,7 @@ namespace LuaAura
         E->CHECKOBJ<ElunaObject>(1)->Invalidate();
         return 0;
     }
-    
+
     ElunaRegister<Aura> AuraMethods[] =
     {
         // Getters

@@ -774,7 +774,7 @@ namespace LuaItem
         item->SaveToDB(trans);
         return 0;
     }
-    
+
     ElunaRegister<Item> ItemMethods[] =
     {
         // Getters
@@ -796,7 +796,7 @@ namespace LuaItem
         { "GetQuality", &LuaItem::GetQuality },
         { "GetFlags", &LuaItem::GetFlags },
         { "GetFlags2", &LuaItem::GetFlags2 },
-        { "GetExtraFlags", &LuaItem::GetExtraFlags },		
+        { "GetExtraFlags", &LuaItem::GetExtraFlags },
         { "GetBuyCount", &LuaItem::GetBuyCount },
         { "GetBuyPrice", &LuaItem::GetBuyPrice },
         { "GetSellPrice", &LuaItem::GetSellPrice },

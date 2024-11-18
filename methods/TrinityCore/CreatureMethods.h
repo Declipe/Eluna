@@ -992,7 +992,7 @@ namespace LuaCreature
      *   LOOT_MODE_HARD_MODE_4      = 16,
      *   LOOT_MODE_JUNK_FISH        = 32768
      * </pre>
-     * 
+     *
      * @param uint16 lootMode
      */
     int SetLootMode(Eluna* E, Creature* creature)

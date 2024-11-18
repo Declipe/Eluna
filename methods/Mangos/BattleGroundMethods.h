@@ -222,7 +222,7 @@ namespace LuaBattleGround
         E->Push(bg->GetStatus());
         return 1;
     }
-    
+
     ElunaRegister<BattleGround> BattleGroundMethods[] =
     {
         // Getters

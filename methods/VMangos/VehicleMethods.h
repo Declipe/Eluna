@@ -103,7 +103,7 @@ namespace LuaVehicle
 #endif
         return 0;
     }
-    
+
     ElunaRegister<Vehicle> VehicleMethods[] =
     {
         // Getters

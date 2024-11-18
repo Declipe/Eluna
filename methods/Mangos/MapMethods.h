@@ -332,7 +332,7 @@ namespace LuaMap
     {
         return LuaVal::PushLuaVal(E->L, map->lua_data);
     }
-    
+
     ElunaRegister<Map> MapMethods[] =
     {
         // Getters

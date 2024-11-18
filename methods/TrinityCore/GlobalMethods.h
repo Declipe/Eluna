@@ -423,7 +423,7 @@ namespace LuaGlobalFunctions
     /**
      * Returns a chat link for an [Item].
      *
-     * @table 
+     * @table
      * @columns [Locale, Value]
      * @values [enUS, 0]
      * @values [koKR, 1]
@@ -499,7 +499,7 @@ namespace LuaGlobalFunctions
     /**
      * Returns the area or zone's name.
      *
-     * @table 
+     * @table
      * @columns [Locale, Value]
      * @values [enUS, 0]
      * @values [koKR, 1]
@@ -608,7 +608,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, SERVER_EVENT_ON_NETWORK_START, "", "", "Not Implemented"]
@@ -666,7 +666,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_CHARACTER_CREATE, "WORLD", "event, player", ""]
@@ -740,7 +740,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_ADD_MEMBER, "WORLD", "event, guild, player, rank", ""]
@@ -775,7 +775,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_MEMBER_ADD, "WORLD", "event, group, guid", ""]
@@ -806,7 +806,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_START, "MAP", "event, bg, bgId, instanceId", Needs to be added to TC"]
@@ -834,7 +834,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [5, ON_PACKET_RECEIVE, "WORLD", "event, packet, player", "Player only if accessible. Can return false, newPacket"]
@@ -862,7 +862,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_HELLO, "MAP", "event, player, object", "Object is the Creature/GameObject/Item. Can return false to do default action."]
@@ -889,7 +889,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_HELLO, "MAP", "event, player, object", "Object is the Creature/GameObject/Item. Can return false to do default action."]
@@ -949,7 +949,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_HELLO, "MAP", "event, player, object", "Object is the Creature/GameObject/Item. Can return false to do default action. For item gossip can return false to stop spell casting."]
@@ -976,7 +976,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_INITIALIZE                 , "MAP", "event, instance_data, map", ""]
@@ -1003,7 +1003,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_INITIALIZE                 , "MAP", "event, instance_data, map", ""]
@@ -1030,7 +1030,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * Note that you can not use `ON_HELLO` with this hook. It does nothing since players dont have an "on hello".
      *
      * @table
@@ -1059,7 +1059,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1,  ON_ENTER_COMBAT, "MAP", "event, creature, target", "Can return true to stop normal action"]
@@ -1112,7 +1112,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1,  ON_ENTER_COMBAT, "MAP", "event, creature, target", "Can return true to stop normal action"]
@@ -1166,7 +1166,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1,  ON_AIUPDATE, "MAP", "event, go, diff", ""]
@@ -1204,7 +1204,7 @@ namespace LuaGlobalFunctions
      * In Multistate mode (default), events are either registered to the WORLD state (-1) or the MAP states (map ID). These events will only ever trigger on their respective state.
      *
      * In Compatibility mode, all events are registered to the WORLD state (-1).
-     * 
+     *
      * @table
      * @columns [ID, Event, State, Parameters, Comment]
      * @values [1, ON_CAST, "MAP", "event, spell, skipCheck", ""]
@@ -1966,7 +1966,7 @@ namespace LuaGlobalFunctions
      * There can be several item entry-amount pairs at the end of the function.
      * There can be maximum of 12 different items.
      *
-     * @table 
+     * @table
      * @columns [Stationery, ID, Comment]
      * @values [TEST, 1, ""]
      * @values [DEFAULT, 41, ""]

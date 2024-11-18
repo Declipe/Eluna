@@ -179,7 +179,7 @@ namespace LuaQuest
         E->Push(quest->GetMaxLevel());
         return 1;
     }
-    
+
     ElunaRegister<Quest> QuestMethods[] =
     {
         // Getters

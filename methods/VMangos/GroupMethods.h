@@ -35,7 +35,7 @@ namespace LuaGroup
         E->Push(group->IsFull());
         return 1;
     }
-    
+
     /**
      * Returns 'true' if the [Group] is a raid [Group]
      *
@@ -349,7 +349,7 @@ namespace LuaGroup
         group->SetTargetIcon(icon, target);
         return 0;
     }
-    
+
     ElunaRegister<Group> GroupMethods[] =
     {
         // Getters

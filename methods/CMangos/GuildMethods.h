@@ -147,7 +147,7 @@ namespace LuaGuild
     {
         uint8 tabId = E->CHECKVAL<uint8>(2);
         const char* text = E->CHECKVAL<const char*>(3);
-        
+
 		guild->SetGuildBankTabText(tabId, text);
         return 0;
     }
@@ -238,7 +238,7 @@ namespace LuaGuild
         guild->ChangeMemberRank(player->GET_GUID(), newRank);
         return 0;
     }
-    
+
     ElunaRegister<Guild> GuildMethods[] =
     {
         // Getters

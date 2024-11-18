@@ -185,7 +185,7 @@ namespace LuaWorldObject
         ElunaUtil::WorldObjectInRangeCheck checker(true, obj, range, TYPEMASK_PLAYER, 0, hostile, dead);
         MaNGOS::UnitLastSearcher<ElunaUtil::WorldObjectInRangeCheck> searcher(target, checker);
         Cell::VisitWorldObjects(obj, searcher, range);
-        
+
         E->Push(target);
         return 1;
     }
@@ -1125,7 +1125,7 @@ namespace LuaWorldObject
     {
         return LuaVal::PushLuaVal(E->L, obj->lua_data);
     }
-    
+
     ElunaRegister<WorldObject> WorldObjectMethods[] =
     {
         // Getters

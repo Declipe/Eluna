@@ -774,7 +774,7 @@ namespace LuaItem
 #endif
         return 0;
     }
-    
+
     ElunaRegister<Item> ItemMethods[] =
     {
         // Getters

@@ -117,7 +117,7 @@ void ElunaLoader::LoadScripts()
     std::string lua_folderpath = sElunaConfig->GetConfig(CONFIG_ELUNA_SCRIPT_PATH);
     const std::string& lua_path_extra = sElunaConfig->GetConfig(CONFIG_ELUNA_REQUIRE_PATH_EXTRA);
     const std::string& lua_cpath_extra = sElunaConfig->GetConfig(CONFIG_ELUNA_REQUIRE_CPATH_EXTRA);
-    
+
 #if !defined ELUNA_WINDOWS
     if (lua_folderpath[0] == '~')
         if (const char* home = getenv("HOME"))
@@ -302,7 +302,7 @@ void ElunaLoader::ProcessScript(lua_State* L, std::string filename, const std::s
     script.modulepath = fullpath.substr(0, fullpath.length() - filename.length() - ext.length());
     script.mapId = mapId;
 
-    // if compilation fails, we don't add the script 
+    // if compilation fails, we don't add the script
     if (!CompileScript(L, script))
         return;
 

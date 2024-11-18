@@ -92,7 +92,7 @@ struct ElunaCreatureAI : NativeScriptedAI
 #endif
 
     // Called at any Damage from any attacker (before damage apply)
-#if defined ELUNA_TRINITY || defined ELUNA_CMANGOS 
+#if defined ELUNA_TRINITY || defined ELUNA_CMANGOS
     void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType damageType, SpellInfo const* spellInfo) override
 #else
     void DamageTaken(Unit* attacker, uint32& damage) override

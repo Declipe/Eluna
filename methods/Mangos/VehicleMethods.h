@@ -92,7 +92,7 @@ namespace LuaVehicle
         vehicle->UnBoard(passenger, false);
         return 0;
     }
-    
+
     ElunaRegister<Vehicle> VehicleMethods[] =
     {
         // Getters

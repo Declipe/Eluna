@@ -46,7 +46,7 @@ namespace LuaGroup
         E->Push(group->isLFGGroup());
         return 1;
     }
-    
+
     /**
      * Returns 'true' if the [Group] is a raid [Group]
      *

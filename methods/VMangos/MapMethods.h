@@ -270,7 +270,7 @@ namespace LuaMap
         lua_settop(E->L, tbl);
         return 1;
     }
-    
+
     ElunaRegister<Map> MapMethods[] =
     {
         // Getters
