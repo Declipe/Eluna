@@ -1126,7 +1126,7 @@ namespace LuaPlayer
      */
     int GetGuildRank(Eluna* E, Player* player) // TODO: Move to Guild Methods
     {
-        E->Push(player->GetGuildRank());
+        E->Push(player->GetRank());
         return 1;
     }
 
@@ -1769,7 +1769,7 @@ namespace LuaPlayer
         if (!player->GetGuildId())
             return 0;
 
-        player->SetGuildRank(rank);
+        player->SetRank(rank);
         return 0;
     }
 
