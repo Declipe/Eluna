@@ -988,7 +988,7 @@ namespace LuaCreature
      * @values [LOOT_MODE_HARD_MODE_3, 8]
      * @values [LOOT_MODE_HARD_MODE_4, 16]
      * @values [LOOT_MODE_JUNK_FISH, 32768]
-     * 
+     *
      * @param uint16 lootMode
      */
     int SetLootMode(Eluna* E, Creature* creature)

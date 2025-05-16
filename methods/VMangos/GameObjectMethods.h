@@ -315,7 +315,7 @@ namespace LuaGameObject
         go->SetSpawnedByDefault(spawn);
         return 0;
     }
-    
+
     ElunaRegister<GameObject> GameObjectMethods[] =
     {
         // Getters

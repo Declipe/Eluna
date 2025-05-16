@@ -3746,7 +3746,7 @@ namespace LuaPlayer
             ChatHandler(player->GetSession()).ExecuteCommand(command);
         return 0;
     }
-    
+
     ElunaRegister<Player> PlayerMethods[] =
     {
         // Getters
