@@ -25,7 +25,7 @@ namespace LuaPlayer
      */
     int CanTitanGrip(Eluna* E, Player* player)
     {
-        E->Push(player->CanTitanGrip());
+        E->Push(player->CanTitanGrip(0u));
         return 1;
     }
 
