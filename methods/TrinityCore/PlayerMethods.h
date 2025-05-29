@@ -25,7 +25,9 @@ namespace LuaPlayer
      */
     int CanTitanGrip(Eluna* E, Player* player)
     {
-        E->Push(player->CanTitanGrip(0u));
+        Item* item = E->CHECKOBJ<Item>(2);
+
+        E->Push(player->CanTitanGrip(item));
         return 1;
     }
 
