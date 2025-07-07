@@ -29,15 +29,20 @@ void ElunaConfig::Initialize()
 {
     // Load bools
     SetConfig(CONFIG_ELUNA_ENABLED, "Eluna.Enabled", true);
-    SetConfig(CONFIG_ELUNA_COMPATIBILITY_MODE, "Eluna.CompatibilityMode", false);
     SetConfig(CONFIG_ELUNA_TRACEBACK, "Eluna.TraceBack", false);
     SetConfig(CONFIG_ELUNA_SCRIPT_RELOADER, "Eluna.ScriptReloader", false);
+    SetConfig(CONFIG_ELUNA_ENABLE_UNSAFE, "Eluna.UseUnsafeMethods", true);
+    SetConfig(CONFIG_ELUNA_ENABLE_DEPRECATED, "Eluna.UseDeprecatedMethods", true);
+    SetConfig(CONFIG_ELUNA_ENABLE_RELOAD_COMMAND, "Eluna.ReloadCommand", true);
 
     // Load strings
     SetConfig(CONFIG_ELUNA_SCRIPT_PATH, "Eluna.ScriptPath", "lua_scripts");
     SetConfig(CONFIG_ELUNA_ONLY_ON_MAPS, "Eluna.OnlyOnMaps", "");
     SetConfig(CONFIG_ELUNA_REQUIRE_PATH_EXTRA, "Eluna.RequirePaths", "");
     SetConfig(CONFIG_ELUNA_REQUIRE_CPATH_EXTRA, "Eluna.RequireCPaths", "");
+
+    // Load ints
+    SetConfig(CONFIG_ELUNA_RELOAD_SECURITY_LEVEL, "Eluna.ReloadSecurityLevel", 3);
 
     // Call extra functions
     TokenizeAllowedMaps();
@@ -63,14 +68,13 @@ void ElunaConfig::SetConfig(ElunaConfigStringValues index, char const* fieldname
 #endif
 }
 
-bool ElunaConfig::IsElunaEnabled()
+void ElunaConfig::SetConfig(ElunaConfigUInt32Values index, char const* fieldname, uint32 defvalue)
 {
-    return GetConfig(CONFIG_ELUNA_ENABLED);
-}
-
-bool ElunaConfig::IsElunaCompatibilityMode()
-{
-    return GetConfig(CONFIG_ELUNA_COMPATIBILITY_MODE);
+#if defined ELUNA_TRINITY
+    SetConfig(index, sConfigMgr->GetIntDefault(fieldname, defvalue));
+#else
+    SetConfig(index, sConfig.GetIntDefault(fieldname, defvalue));
+#endif
 }
 
 bool ElunaConfig::ShouldMapLoadEluna(uint32 id)

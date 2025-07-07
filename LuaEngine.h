@@ -103,6 +103,7 @@ typedef VehicleInfo Vehicle;
 struct lua_State;
 class EventMgr;
 class ElunaObject;
+class BaseBindingMap;
 template<typename T> class ElunaTemplate;
 
 template<typename K> class BindingMap;
@@ -128,6 +129,13 @@ enum MethodRegisterState
     METHOD_REG_ALL
 };
 
+enum MethodFlags : uint32
+{
+    METHOD_FLAG_NONE = 0x0,
+    METHOD_FLAG_UNSAFE = 0x1,
+    METHOD_FLAG_DEPRECATED = 0x2
+};
+
 #define ELUNA_STATE_PTR "Eluna State Ptr"
 
 #if defined ELUNA_TRINITY
@@ -143,8 +151,6 @@ enum MethodRegisterState
 class ELUNA_GAME_API Eluna
 {
 public:
-    typedef std::list<LuaScript> ScriptList;
-    typedef std::recursive_mutex LockType;
 
     void ReloadEluna() { reload = true; }
     bool ExecuteCall(int params, int res);
@@ -171,13 +177,19 @@ private:
 
     Map* const boundMap;
 
-    // Whether or not Eluna is in compatibility mode. Used in some method wrappers.
-    bool compatibilityMode;
-
     // Map from instance ID -> Lua table ref
     std::unordered_map<uint32, int> instanceDataRefs;
     // Map from map ID -> Lua table ref
     std::unordered_map<uint32, int> continentDataRefs;
+
+    std::array<std::unique_ptr<BaseBindingMap>, Hooks::REGTYPE_COUNT> bindingMaps;
+
+    template<typename T>
+    void CreateBinding(Hooks::RegisterTypes type)
+    {
+        auto index = static_cast<std::underlying_type_t<Hooks::RegisterTypes>>(type);
+        bindingMaps[index] = std::make_unique<BindingMap<T>>(L);
+    }
 
     void OpenLua();
     void CloseLua();
@@ -236,33 +248,12 @@ private:
 public:
 
     lua_State* L;
-    EventMgr* eventMgr;
+    std::unique_ptr<EventMgr> eventMgr;
 
 #if defined ELUNA_TRINITY
     QueryCallbackProcessor queryProcessor;
     QueryCallbackProcessor& GetQueryProcessor() { return queryProcessor; }
 #endif
-
-    BindingMap< EventKey<Hooks::ServerEvents> >*     ServerEventBindings;
-    BindingMap< EventKey<Hooks::PlayerEvents> >*     PlayerEventBindings;
-    BindingMap< EventKey<Hooks::GuildEvents> >*      GuildEventBindings;
-    BindingMap< EventKey<Hooks::GroupEvents> >*      GroupEventBindings;
-    BindingMap< EventKey<Hooks::VehicleEvents> >*    VehicleEventBindings;
-    BindingMap< EventKey<Hooks::BGEvents> >*         BGEventBindings;
-
-    BindingMap< EntryKey<Hooks::PacketEvents> >*     PacketEventBindings;
-    BindingMap< EntryKey<Hooks::CreatureEvents> >*   CreatureEventBindings;
-    BindingMap< EntryKey<Hooks::GossipEvents> >*     CreatureGossipBindings;
-    BindingMap< EntryKey<Hooks::GameObjectEvents> >* GameObjectEventBindings;
-    BindingMap< EntryKey<Hooks::GossipEvents> >*     GameObjectGossipBindings;
-    BindingMap< EntryKey<Hooks::SpellEvents> >*      SpellEventBindings;
-    BindingMap< EntryKey<Hooks::ItemEvents> >*       ItemEventBindings;
-    BindingMap< EntryKey<Hooks::GossipEvents> >*     ItemGossipBindings;
-    BindingMap< EntryKey<Hooks::GossipEvents> >*     PlayerGossipBindings;
-    BindingMap< EntryKey<Hooks::InstanceEvents> >*   MapEventBindings;
-    BindingMap< EntryKey<Hooks::InstanceEvents> >*   InstanceEventBindings;
-
-    BindingMap< UniqueObjectKey<Hooks::CreatureEvents> >* CreatureUniqueBindings;
 
     static int StackTrace(lua_State* _L);
     static void Report(lua_State* _L);
@@ -333,7 +324,7 @@ public:
 #if !defined TRACKABLE_PTR_NAMESPACE
     uint64 GetCallstackId() const { return callstackid; }
 #endif
-    int Register(uint8 reg, uint32 entry, ObjectGuid guid, uint32 instanceId, uint32 event_id, int functionRef, uint32 shots);
+    int Register(std::underlying_type_t<Hooks::RegisterTypes> regtype, uint32 entry, ObjectGuid guid, uint32 instanceId, uint32 event_id, int functionRef, uint32 shots);
     void UpdateEluna(uint32 diff);
 
     // Checks
@@ -370,9 +361,26 @@ public:
         return 0;
     }
 
-    bool GetCompatibilityMode() const { return compatibilityMode; }
+    template<typename T>
+    BindingMap<T>* GetBinding(std::underlying_type_t<Hooks::RegisterTypes> type)
+    {
+        if (type >= Hooks::REGTYPE_COUNT)
+            return nullptr;
 
-    Eluna(Map * map, bool compatMode = false);
+        auto& binding = bindingMaps[type];
+        if (!binding)
+            return nullptr;
+
+        return dynamic_cast<BindingMap<T>*>(binding.get());
+    }
+
+    template<typename T>
+    BindingMap<T>* GetBinding(Hooks::RegisterTypes type)
+    {
+        return GetBinding<T>(static_cast<std::underlying_type_t<Hooks::RegisterTypes>>(type));
+    }
+
+    Eluna(Map * map);
     ~Eluna();
 
     // Prevent copy
@@ -565,7 +573,7 @@ public:
     void OnDestroy(Map* map);
     void OnPlayerEnter(Map* map, Player* player);
     void OnPlayerLeave(Map* map, Player* player);
-    void OnUpdate(Map* map, uint32 diff);
+    void OnMapUpdate(Map* map, uint32 diff);
     void OnAddToWorld(Creature* creature);
     void OnRemoveFromWorld(Creature* creature);
     void OnAddToWorld(GameObject* gameobject);

@@ -7,6 +7,10 @@
 #ifndef _HOOKS_H
 #define _HOOKS_H
 
+#if defined ELUNA_CMANGOS
+#include "Platform/Define.h"
+#endif
+
 /*
  * A hook should be written in one of the following forms:
  *
@@ -68,7 +72,7 @@
 
 namespace Hooks
 {
-    enum RegisterTypes
+    enum RegisterTypes : uint8
     {
         REGTYPE_PACKET,
         REGTYPE_SERVER,
@@ -76,6 +80,7 @@ namespace Hooks
         REGTYPE_GUILD,
         REGTYPE_GROUP,
         REGTYPE_CREATURE,
+        REGTYPE_CREATURE_UNIQUE,
         REGTYPE_VEHICLE,
         REGTYPE_CREATURE_GOSSIP,
         REGTYPE_GAMEOBJECT,

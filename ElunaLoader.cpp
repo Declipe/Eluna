@@ -166,9 +166,7 @@ void ElunaLoader::LoadScripts()
 
 int ElunaLoader::LoadBytecodeChunk(lua_State* /*L*/, uint8* bytes, size_t len, BytecodeBuffer* buffer)
 {
-    for (size_t i = 0; i < len; i++)
-        buffer->push_back(bytes[i]);
-
+    buffer->insert(buffer->end(), bytes, bytes + len);
     return 0;
 }
 
@@ -232,7 +230,8 @@ void ElunaLoader::ReadFiles(lua_State* L, std::string path)
 
                 // was file, try add
                 std::string filename = dir_iter->path().filename().generic_string();
-                ProcessScript(L, filename, fullpath, mapId);
+                size_t filesize = fs::file_size(dir_iter->path());
+                ProcessScript(L, filename, filesize, fullpath, mapId);
             }
         }
     }
@@ -273,7 +272,7 @@ bool ElunaLoader::CompileScript(lua_State* L, LuaScript& script)
     return true;
 }
 
-void ElunaLoader::ProcessScript(lua_State* L, std::string filename, const std::string& fullpath, int32 mapId)
+void ElunaLoader::ProcessScript(lua_State* L, std::string filename, const size_t& filesize, const std::string& fullpath, int32 mapId)
 {
     ELUNA_LOG_DEBUG("[Eluna]: ProcessScript checking file `%s`", fullpath.c_str());
 
@@ -294,6 +293,7 @@ void ElunaLoader::ProcessScript(lua_State* L, std::string filename, const std::s
     script.filename = filename;
     script.filepath = fullpath;
     script.modulepath = fullpath.substr(0, fullpath.length() - filename.length() - ext.length());
+    script.bytecode.reserve(filesize);
     script.mapId = mapId;
 
     // if compilation fails, we don't add the script
@@ -338,8 +338,10 @@ void ElunaLoader::CombineLists()
     m_scripts.sort(ScriptPathComparator);
 
     m_scriptCache.clear();
-    m_scriptCache.insert(m_scriptCache.end(), m_extensions.begin(), m_extensions.end());
-    m_scriptCache.insert(m_scriptCache.end(), m_scripts.begin(), m_scripts.end());
+    m_scriptCache.reserve(m_extensions.size() + m_scripts.size());
+
+    std::move(m_extensions.begin(), m_extensions.end(), std::back_inserter(m_scriptCache));
+    std::move(m_scripts.begin(), m_scripts.end(), std::back_inserter(m_scriptCache));
 
     m_extensions.clear();
     m_scripts.clear();

@@ -3352,6 +3352,24 @@ namespace LuaPlayer
     }
 
     /**
+     * Adds a new item that acts as a response to which are chosen from a gossip menu shown to the [Player].
+     *
+     * See also: [Player:GossipMenuAddItem], [Player:GossipSendMenu], [Player:GossipAddQuests], [Player:GossipComplete], [Player:GossipClearMenu]
+     *
+     * @param int32 action_menu : number that specifies which gossip menu to show next, or negative to close the current one
+     * @param uint32 action_poi : number that specifies which point of interest to send players to
+     * @param uint32 action_script : number that specifies a script to start
+     */
+    int GossipMenuAddItemData(Eluna* E, Player* player)
+    {
+        int32 action_menu = E->CHECKVAL<int32>(2);
+        uint32 action_poi = E->CHECKVAL<uint32>(3);
+        uint32 action_script = E->CHECKVAL<uint32>(4);
+        player->PlayerTalkClass->GetGossipMenu().AddMenuItemData(action_menu, action_poi, action_script);
+        return 0;
+    }
+
+    /**
      * Closes the [Player]s currently open Gossip Menu.
      *
      * See also: [Player:GossipMenuAddItem], [Player:GossipAddQuests], [Player:GossipSendMenu], [Player:GossipClearMenu]
@@ -3843,6 +3861,7 @@ namespace LuaPlayer
 
         // Gossip
         { "GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem },
+        { "GossipMenuAddItemData", &LuaPlayer::GossipMenuAddItemData },
         { "GossipSendMenu", &LuaPlayer::GossipSendMenu },
         { "GossipComplete", &LuaPlayer::GossipComplete },
         { "GossipClearMenu", &LuaPlayer::GossipClearMenu },

@@ -19,8 +19,8 @@
 namespace LuaPlayer
 {
     /**
-     * Returns 'true' if the [Player] can Titan Grip, 'false' otherwise.
-     *
+     * Returns 'true' if the [Player] can Titan Grip the specific [Item], 'false' otherwise.
+     * @param [Item] item : an instance of an item
      * @return bool canTitanGrip
      */
     int CanTitanGrip(Eluna* E, Player* player)
@@ -4078,6 +4078,7 @@ namespace LuaPlayer
 
         // Gossip
         { "GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem },
+        { "GossipMenuAddItemData", METHOD_REG_NONE }, // not implemented
         { "GossipSendMenu", &LuaPlayer::GossipSendMenu },
         { "GossipComplete", &LuaPlayer::GossipComplete },
         { "GossipClearMenu", &LuaPlayer::GossipClearMenu },

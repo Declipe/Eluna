@@ -31,9 +31,8 @@
 #include "CorpseMethods.h"
 #include "VehicleMethods.h"
 #include "BattleGroundMethods.h"
-
-// Custom methods
-#include "CustomMethods.h"
+#include "BigIntMethods.h"
+#include "CustomMethodsInterface.h"
 
 void RegisterMethods(Eluna* E)
 {
@@ -110,12 +109,14 @@ void RegisterMethods(Eluna* E)
     ElunaTemplate<ElunaQuery>::SetMethods(E, LuaQuery::QueryMethods);
 
     ElunaTemplate<long long>::Register(E, "long long");
+    ElunaTemplate<long long>::SetMethods(E, LuaBigInt::LongLongMethods);
 
     ElunaTemplate<unsigned long long>::Register(E, "unsigned long long");
+    ElunaTemplate<unsigned long long>::SetMethods(E, LuaBigInt::ULongLongMethods);
 
     ElunaTemplate<ObjectGuid>::Register(E, "ObjectGuid");
+    ElunaTemplate<ObjectGuid>::SetMethods(E, LuaBigInt::ObjectGuidMethods);
 
-    // Register custom methods
     LuaCustom::RegisterCustomMethods(E);
 
     LuaVal::Register(E->L);

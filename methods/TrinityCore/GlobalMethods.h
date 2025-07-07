@@ -710,7 +710,7 @@ namespace LuaGlobalFunctions
      * @values [39, ON_LEARN_TALENTS, "MAP", <event: number, player: Player, talentId: number, talentRank: number, spellid: number>, ""]
      * @values [40, ON_ENVIRONMENTAL_DEATH, "MAP", <event: number, player: Player, environmentalDamageType: number>, ""]
      * @values [41, ON_TRADE_ACCEPT, "MAP", <event: number, player: Player, target: Player>, "Can return false to interrupt trade"]
-     * @values [42, ON_COMMAND, "MAP", <event: number, player: Player, command: string>, "Player is nil if command used from console. Can return false"]
+     * @values [42, ON_COMMAND, "WORLD", <event: number, player: Player, command: string>, "Player is nil if command used from console. Can return false"]
      * @values [43, ON_SKILL_CHANGE, "MAP", <event: number, player: Player, skillId: number, skillValue: number>, "Returns new skill level value"]
      * @values [44, ON_LEARN_SPELL, "MAP", <event: number, player: Player, spellId: number>, ""]
      * @values [45, ON_ACHIEVEMENT_COMPLETE, "MAP", <event: number, player: Player, achievementId: number>, ""]
@@ -1157,7 +1157,7 @@ namespace LuaGlobalFunctions
      */
     int RegisterUniqueCreatureEvent(Eluna* E)
     {
-        return RegisterUniqueHelper(E, Hooks::REGTYPE_CREATURE);
+        return RegisterUniqueHelper(E, Hooks::REGTYPE_CREATURE_UNIQUE);
     }
 
     /**
@@ -1272,6 +1272,8 @@ namespace LuaGlobalFunctions
      *         until not Q:NextRow()
      *     end
      *
+     * @warning This method is flagged as **unsafe** and is **disabled by default**. Use with caution, or transition to Async queries.
+     * 
      * @param string sql : query to execute
      * @return [ElunaQuery] results or nil if no rows found or nil if no rows found
      */
@@ -1371,6 +1373,8 @@ namespace LuaGlobalFunctions
      *
      * For an example see [Global:WorldDBQuery].
      *
+     * @warning This method is flagged as **unsafe** and is **disabled by default**. Use with caution, or transition to Async queries.
+     * 
      * @param string sql : query to execute
      * @return [ElunaQuery] results or nil if no rows found
      */
@@ -1462,6 +1466,8 @@ namespace LuaGlobalFunctions
      *
      * For an example see [Global:WorldDBQuery].
      *
+     * @warning This method is flagged as **unsafe** and is **disabled by default**. Use with caution, or transition to Async queries.
+     * 
      * @param string sql : query to execute
      * @return [ElunaQuery] results or nil if no rows found
      */
@@ -2270,7 +2276,7 @@ namespace LuaGlobalFunctions
      */
     int IsCompatibilityMode(Eluna* E)
     {
-        E->Push(E->GetCompatibilityMode());
+        E->Push(false);
         return 1;
     }
 
@@ -2568,15 +2574,16 @@ namespace LuaGlobalFunctions
     int ClearBattleGroundEvents(Eluna* E)
     {
         typedef EventKey<Hooks::BGEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_BG);
 
         if (lua_isnoneornil(E->L, 1))
         {
-            E->BGEventBindings->Clear();
+            binding->Clear();
         }
         else
         {
             uint32 event_type = E->CHECKVAL<uint32>(1);
-            E->BGEventBindings->Clear(Key((Hooks::BGEvents)event_type));
+            binding->Clear(Key((Hooks::BGEvents)event_type));
         }
         return 0;
     }
@@ -2599,19 +2606,20 @@ namespace LuaGlobalFunctions
     int ClearCreatureEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::CreatureEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_CREATURE);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::CREATURE_EVENT_COUNT; ++i)
-                E->CreatureEventBindings->Clear(Key((Hooks::CreatureEvents)i, entry));
+                binding->Clear(Key((Hooks::CreatureEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->CreatureEventBindings->Clear(Key((Hooks::CreatureEvents)event_type, entry));
+            binding->Clear(Key((Hooks::CreatureEvents)event_type, entry));
         }
         return 0;
     }
@@ -2635,6 +2643,7 @@ namespace LuaGlobalFunctions
     int ClearUniqueCreatureEvents(Eluna* E)
     {
         typedef UniqueObjectKey<Hooks::CreatureEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_CREATURE_UNIQUE);
 
         if (lua_isnoneornil(E->L, 3))
         {
@@ -2642,14 +2651,14 @@ namespace LuaGlobalFunctions
             uint32 instanceId = E->CHECKVAL<uint32>(2);
 
             for (uint32 i = 1; i < Hooks::CREATURE_EVENT_COUNT; ++i)
-                E->CreatureUniqueBindings->Clear(Key((Hooks::CreatureEvents)i, guid, instanceId));
+                binding->Clear(Key((Hooks::CreatureEvents)i, guid, instanceId));
         }
         else
         {
             ObjectGuid guid = E->CHECKVAL<ObjectGuid>(1);
             uint32 instanceId = E->CHECKVAL<uint32>(2);
             uint32 event_type = E->CHECKVAL<uint32>(3);
-            E->CreatureUniqueBindings->Clear(Key((Hooks::CreatureEvents)event_type, guid, instanceId));
+            binding->Clear(Key((Hooks::CreatureEvents)event_type, guid, instanceId));
         }
         return 0;
     }
@@ -2672,19 +2681,20 @@ namespace LuaGlobalFunctions
     int ClearCreatureGossipEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::GossipEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_CREATURE_GOSSIP);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::GOSSIP_EVENT_COUNT; ++i)
-                E->CreatureGossipBindings->Clear(Key((Hooks::GossipEvents)i, entry));
+                binding->Clear(Key((Hooks::GossipEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->CreatureGossipBindings->Clear(Key((Hooks::GossipEvents)event_type, entry));
+            binding->Clear(Key((Hooks::GossipEvents)event_type, entry));
         }
         return 0;
     }
@@ -2707,19 +2717,20 @@ namespace LuaGlobalFunctions
     int ClearGameObjectEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::GameObjectEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_GAMEOBJECT);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::GAMEOBJECT_EVENT_COUNT; ++i)
-                E->GameObjectEventBindings->Clear(Key((Hooks::GameObjectEvents)i, entry));
+                binding->Clear(Key((Hooks::GameObjectEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->GameObjectEventBindings->Clear(Key((Hooks::GameObjectEvents)event_type, entry));
+            binding->Clear(Key((Hooks::GameObjectEvents)event_type, entry));
         }
         return 0;
     }
@@ -2742,19 +2753,20 @@ namespace LuaGlobalFunctions
     int ClearGameObjectGossipEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::GossipEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_GAMEOBJECT_GOSSIP);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::GOSSIP_EVENT_COUNT; ++i)
-                E->GameObjectGossipBindings->Clear(Key((Hooks::GossipEvents)i, entry));
+                binding->Clear(Key((Hooks::GossipEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->GameObjectGossipBindings->Clear(Key((Hooks::GossipEvents)event_type, entry));
+            binding->Clear(Key((Hooks::GossipEvents)event_type, entry));
         }
         return 0;
     }
@@ -2773,15 +2785,16 @@ namespace LuaGlobalFunctions
     int ClearGroupEvents(Eluna* E)
     {
         typedef EventKey<Hooks::GroupEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_GROUP);
 
         if (lua_isnoneornil(E->L, 1))
         {
-            E->GroupEventBindings->Clear();
+            binding->Clear();
         }
         else
         {
             uint32 event_type = E->CHECKVAL<uint32>(1);
-            E->GroupEventBindings->Clear(Key((Hooks::GroupEvents)event_type));
+            binding->Clear(Key((Hooks::GroupEvents)event_type));
         }
         return 0;
     }
@@ -2800,15 +2813,16 @@ namespace LuaGlobalFunctions
     int ClearGuildEvents(Eluna* E)
     {
         typedef EventKey<Hooks::GuildEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_GUILD);
 
         if (lua_isnoneornil(E->L, 1))
         {
-            E->GuildEventBindings->Clear();
+            binding->Clear();
         }
         else
         {
             uint32 event_type = E->CHECKVAL<uint32>(1);
-            E->GuildEventBindings->Clear(Key((Hooks::GuildEvents)event_type));
+            binding->Clear(Key((Hooks::GuildEvents)event_type));
         }
         return 0;
     }
@@ -2831,19 +2845,20 @@ namespace LuaGlobalFunctions
     int ClearItemEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::ItemEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_ITEM);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::ITEM_EVENT_COUNT; ++i)
-                E->ItemEventBindings->Clear(Key((Hooks::ItemEvents)i, entry));
+                binding->Clear(Key((Hooks::ItemEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->ItemEventBindings->Clear(Key((Hooks::ItemEvents)event_type, entry));
+            binding->Clear(Key((Hooks::ItemEvents)event_type, entry));
         }
         return 0;
     }
@@ -2866,19 +2881,20 @@ namespace LuaGlobalFunctions
     int ClearItemGossipEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::GossipEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_ITEM_GOSSIP);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::GOSSIP_EVENT_COUNT; ++i)
-                E->ItemGossipBindings->Clear(Key((Hooks::GossipEvents)i, entry));
+                binding->Clear(Key((Hooks::GossipEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->ItemGossipBindings->Clear(Key((Hooks::GossipEvents)event_type, entry));
+            binding->Clear(Key((Hooks::GossipEvents)event_type, entry));
         }
         return 0;
     }
@@ -2898,19 +2914,20 @@ namespace LuaGlobalFunctions
     int ClearPacketEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::PacketEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_PACKET);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::PACKET_EVENT_COUNT; ++i)
-                E->PacketEventBindings->Clear(Key((Hooks::PacketEvents)i, entry));
+                binding->Clear(Key((Hooks::PacketEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->PacketEventBindings->Clear(Key((Hooks::PacketEvents)event_type, entry));
+            binding->Clear(Key((Hooks::PacketEvents)event_type, entry));
         }
         return 0;
     }
@@ -2929,15 +2946,16 @@ namespace LuaGlobalFunctions
     int ClearPlayerEvents(Eluna* E)
     {
         typedef EventKey<Hooks::PlayerEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_PLAYER);
 
         if (lua_isnoneornil(E->L, 1))
         {
-            E->PlayerEventBindings->Clear();
+            binding->Clear();
         }
         else
         {
             uint32 event_type = E->CHECKVAL<uint32>(1);
-            E->PlayerEventBindings->Clear(Key((Hooks::PlayerEvents)event_type));
+            binding->Clear(Key((Hooks::PlayerEvents)event_type));
         }
         return 0;
     }
@@ -2957,19 +2975,20 @@ namespace LuaGlobalFunctions
     int ClearPlayerGossipEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::GossipEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_PLAYER_GOSSIP);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::GOSSIP_EVENT_COUNT; ++i)
-                E->PlayerGossipBindings->Clear(Key((Hooks::GossipEvents)i, entry));
+                binding->Clear(Key((Hooks::GossipEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->PlayerGossipBindings->Clear(Key((Hooks::GossipEvents)event_type, entry));
+            binding->Clear(Key((Hooks::GossipEvents)event_type, entry));
         }
         return 0;
     }
@@ -2988,15 +3007,16 @@ namespace LuaGlobalFunctions
     int ClearServerEvents(Eluna* E)
     {
         typedef EventKey<Hooks::ServerEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_SERVER);
 
         if (lua_isnoneornil(E->L, 1))
         {
-            E->ServerEventBindings->Clear();
+            binding->Clear();
         }
         else
         {
             uint32 event_type = E->CHECKVAL<uint32>(1);
-            E->ServerEventBindings->Clear(Key((Hooks::ServerEvents)event_type));
+            binding->Clear(Key((Hooks::ServerEvents)event_type));
         }
         return 0;
     }
@@ -3016,19 +3036,20 @@ namespace LuaGlobalFunctions
     int ClearMapEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::InstanceEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_MAP);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::INSTANCE_EVENT_COUNT; ++i)
-                E->MapEventBindings->Clear(Key((Hooks::InstanceEvents)i, entry));
+                binding->Clear(Key((Hooks::InstanceEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->MapEventBindings->Clear(Key((Hooks::InstanceEvents)event_type, entry));
+            binding->Clear(Key((Hooks::InstanceEvents)event_type, entry));
         }
 
         return 0;
@@ -3049,19 +3070,20 @@ namespace LuaGlobalFunctions
     int ClearInstanceEvents(Eluna* E)
     {
         typedef EntryKey<Hooks::InstanceEvents> Key;
+        auto binding = E->GetBinding<Key>(Hooks::REGTYPE_INSTANCE);
 
         if (lua_isnoneornil(E->L, 2))
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
 
             for (uint32 i = 1; i < Hooks::INSTANCE_EVENT_COUNT; ++i)
-                E->InstanceEventBindings->Clear(Key((Hooks::InstanceEvents)i, entry));
+                binding->Clear(Key((Hooks::InstanceEvents)i, entry));
         }
         else
         {
             uint32 entry = E->CHECKVAL<uint32>(1);
             uint32 event_type = E->CHECKVAL<uint32>(2);
-            E->InstanceEventBindings->Clear(Key((Hooks::InstanceEvents)event_type, entry));
+            binding->Clear(Key((Hooks::InstanceEvents)event_type, entry));
         }
 
         return 0;
@@ -3158,13 +3180,13 @@ namespace LuaGlobalFunctions
         { "ReloadEluna", &LuaGlobalFunctions::ReloadEluna },
         { "RunCommand", &LuaGlobalFunctions::RunCommand },
         { "SendWorldMessage", &LuaGlobalFunctions::SendWorldMessage },
-        { "WorldDBQuery", &LuaGlobalFunctions::WorldDBQuery },
+        { "WorldDBQuery", &LuaGlobalFunctions::WorldDBQuery, METHOD_REG_ALL, METHOD_FLAG_UNSAFE },
         { "WorldDBExecute", &LuaGlobalFunctions::WorldDBExecute },
         { "WorldDBQueryAsync", &LuaGlobalFunctions::WorldDBQueryAsync },
-        { "CharDBQuery", &LuaGlobalFunctions::CharDBQuery },
+        { "CharDBQuery", &LuaGlobalFunctions::CharDBQuery, METHOD_REG_ALL, METHOD_FLAG_UNSAFE },
         { "CharDBExecute", &LuaGlobalFunctions::CharDBExecute },
         { "CharDBQueryAsync", &LuaGlobalFunctions::CharDBQueryAsync },
-        { "AuthDBQuery", &LuaGlobalFunctions::AuthDBQuery },
+        { "AuthDBQuery", &LuaGlobalFunctions::AuthDBQuery, METHOD_REG_ALL, METHOD_FLAG_UNSAFE },
         { "AuthDBExecute", &LuaGlobalFunctions::AuthDBExecute },
         { "AuthDBQueryAsync", &LuaGlobalFunctions::AuthDBQueryAsync },
         { "CreateLuaEvent", &LuaGlobalFunctions::CreateLuaEvent },

@@ -3943,6 +3943,7 @@ namespace LuaPlayer
 
         // Gossip
         { "GossipMenuAddItem", &LuaPlayer::GossipMenuAddItem },
+        { "GossipMenuAddItemData", METHOD_REG_NONE }, // not implemented
         { "GossipSendMenu", &LuaPlayer::GossipSendMenu },
         { "GossipComplete", &LuaPlayer::GossipComplete },
         { "GossipClearMenu", &LuaPlayer::GossipClearMenu },
