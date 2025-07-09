@@ -245,13 +245,15 @@ private:
     template<typename T>
     void HookPush(T const* ptr)                     { Push(ptr); ++push_counter; }
 
+#if defined ELUNA_TRINITY
+    QueryCallbackProcessor queryProcessor;
+#endif
 public:
 
     lua_State* L;
     std::unique_ptr<EventMgr> eventMgr;
 
 #if defined ELUNA_TRINITY
-    QueryCallbackProcessor queryProcessor;
     QueryCallbackProcessor& GetQueryProcessor() { return queryProcessor; }
 #endif
 
