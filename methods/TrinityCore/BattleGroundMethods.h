@@ -82,7 +82,7 @@ namespace LuaBattleGround
      */
     int GetEndTime(Eluna* E, BattleGround* bg)
     {
-        E->Push(bg->GetEndTime());
+        E->Push(bg->GetRemainingTime());
         return 1;
     }
 
