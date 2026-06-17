@@ -76,7 +76,8 @@ namespace LuaBattleGround
     }
 
     /**
-     * Returns the end time of the [BattleGround].
+     * Returns the time remaining in milliseconds until [BattleGround] closes and removes all players.
+     * This can be after battleground ends normally or when there are not enough players
      *
      * @return uint32 endTime
      */
