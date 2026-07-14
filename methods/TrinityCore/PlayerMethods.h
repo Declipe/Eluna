@@ -2544,7 +2544,7 @@ namespace LuaPlayer
      */
     int ResetTalentsCost(Eluna* E, Player* player)
     {
-        E->Push(player->ResetTalentsCost());
+        E->Push(player->GetNextResetTalentsCost());
         return 1;
     }
 
