@@ -10,6 +10,7 @@
 #include "Common.h"
 #include "ElunaUtility.h"
 #include "Hooks.h"
+#include "SpellInfo.h"
 
 #if !defined ELUNA_CMANGOS
 #include "DBCEnums.h"
