@@ -11,6 +11,7 @@
 #include "ElunaUtility.h"
 #include "Hooks.h"
 #include "SpellInfo.h"
+#include "SpellDefines.h"
 
 #if !defined ELUNA_CMANGOS
 #include "DBCEnums.h"
