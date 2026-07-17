@@ -10,6 +10,7 @@
 #include "BindingMap.h"
 #include "ElunaIncludes.h"
 #include "ElunaTemplate.h"
+#include "SpellInfo.h"
 
 using namespace Hooks;
 
