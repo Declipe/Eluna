@@ -27,6 +27,13 @@ extern "C"
 
 #if defined ELUNA_TRINITY
 #include "UniqueTrackablePtr.h"
+#include "Object.h"
+#include "Unit.h"
+#include "Player.h"
+#include "Creature.h"
+#include "GameObject.h"
+#include "Item.h"
+#include "Corpse.h"
 #endif
 
 class ElunaObject
