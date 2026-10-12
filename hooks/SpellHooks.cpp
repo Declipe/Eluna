@@ -11,6 +11,7 @@
 #include "ElunaIncludes.h"
 #include "ElunaTemplate.h"
 #include "SpellInfo.h"
+#include "Unit.h"
 
 using namespace Hooks;
 
