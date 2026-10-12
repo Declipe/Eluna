@@ -11,6 +11,7 @@
 #include "Platform/Define.h"
 #endif
 #include <utility>
+#include "Define.h"
 
 struct EventEntry
 {
