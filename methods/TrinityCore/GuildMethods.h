@@ -46,17 +46,6 @@ namespace LuaGuild
     }
 
     /**
-     * Returns the member count of this [Guild]
-     *
-     * @return uint32 memberCount
-     */
-    int GetMemberCount(Eluna* E, Guild* guild)
-    {
-        E->Push(guild->GetMemberCount());
-        return 1;
-    }
-
-    /**
      * Finds and returns the [Guild] leader by their GUID if logged in
      *
      * In multistate, this method is only available in the WORLD state
@@ -267,7 +256,6 @@ namespace LuaGuild
         { "GetName", &LuaGuild::GetName },
         { "GetMOTD", &LuaGuild::GetMOTD },
         { "GetInfo", &LuaGuild::GetInfo },
-        { "GetMemberCount", &LuaGuild::GetMemberCount },
 
         // Setters
         { "SetBankTabText", &LuaGuild::SetBankTabText, METHOD_REG_WORLD }, // World state method only in multistate
